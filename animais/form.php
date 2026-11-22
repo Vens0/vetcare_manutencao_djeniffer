@@ -5,7 +5,18 @@ if($id){$s=$pdo->prepare("SELECT * FROM animais WHERE id=?");$s->execute([$id]);
 $tutores=$pdo->query("SELECT id,nome FROM tutores ORDER BY nome")->fetchAll();$erro='';
 if($_SERVER['REQUEST_METHOD']==='POST'){
  $nome=trim($_POST['nome']??'');$especie=trim($_POST['especie']??'');
- if($nome==='')$erro='Informe o nome do animal.';
+ // Chamado 8 - O cadastro de animais não exige que todas as informações no formulário sejam preenchidas
+ // if($nome==='')$erro='Informe o nome do animal.';
+ if(
+    $nome==='' ||
+    $especie==='' ||
+    trim($_POST['raca']??'')==='' ||
+    empty($_POST['tutor_id']) ||
+    trim($_POST['sexo']??'')==='' ||
+    trim($_POST['observacoes']??'')===''
+){
+    $erro='Preencha todos os campos antes de cadastrar o animal.';
+}
  // Chamado 2 - erro na validação da data de nascimento do animal, permitindo colocar uma data maior do que o ano que estamos
  // O seguinte trecho foi adicionado para validar a data de nascimento:
  elseif (!empty($_POST['nascimento']) && (
