@@ -3,7 +3,9 @@ require_once __DIR__.'/config/database.php';
 require_once __DIR__.'/config/auth.php';
 exigirLogin();
 $titulo='Painel';
-$tutores=(int)$pdo->query("SELECT COUNT(*) FROM tutores WHERE ativo=1")->fetchColumn();
+// Chamado 10, O sistema deveria mostrar a quantidade de tutores cadastrados, e não a quantidade de ativos, indo contra a RF07
+// $tutores=(int)$pdo->query("SELECT COUNT(*) FROM tutores WHERE ativo=1")->fetchColumn();
+$tutores=(int)$pdo->query("SELECT COUNT(*) FROM tutores")->fetchColumn();
 // Chamado 9, os animais ativos ainda são contabilizados no painel de animal cadastrados, indo contra a RN12
 // $animais=(int)$pdo->query("SELECT COUNT(*) FROM animais")->fetchColumn(); 
 $animais=(int)$pdo->query("SELECT COUNT(*) FROM animais WHERE ativo=1")->fetchColumn();
@@ -14,8 +16,10 @@ include __DIR__.'/includes/header.php';
 <h1>Olá, <?= htmlspecialchars($_SESSION['usuario_nome']) ?></h1>
 <p class="muted">Visão geral da clínica veterinária.</p>
 <div class="grid">
- <div class="stat"><span>Tutores ativos</span><strong><?= $tutores ?></strong></div>
- <div class="stat"><span>Animais cadastrados</span><strong><?= $animais ?></strong></div>
+<!-- <div class="stat"><span>Tutores ativos</span><strong><?= $tutores ?></strong></div> -->
+ <div class="stat"><span>Tutores cadastrados</span><strong><?= $tutores ?></strong></div>
+<!-- <div class="stat"><span>Animais cadastrados</span><strong><?= $animais ?></strong></div> -->
+ <div class="stat"><span>Animais ativos</span><strong><?= $animais ?></strong></div>
  <div class="stat"><span>Consultas agendadas</span><strong><?= $consultas ?></strong></div>
 </div>
 <section class="panel"><h2>Próximas consultas</h2>
