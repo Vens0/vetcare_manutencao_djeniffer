@@ -5,7 +5,18 @@ if($id){$s=$pdo->prepare("SELECT * FROM consultas WHERE id=?");$s->execute([$id]
 $animais=$pdo->query("SELECT id,nome FROM animais ORDER BY nome")->fetchAll();$erro='';
 if($_SERVER['REQUEST_METHOD']==='POST'){
  $data=$_POST['data_consulta']??'';$dt=str_replace('T',' ',$data).(strlen($data)===16?':00':'');
- if(trim($_POST['veterinario']??'')==='')$erro='Informe o veterinário.';
+// Sétimo chamado, o cadastro de consulta não exige que todos os campos sejam preenchidos
+// if(trim($_POST['veterinario']??'')==='')$erro='Informe o veterinário.';
+if(
+    empty($_POST['animal_id']) ||
+    empty($_POST['data_consulta']) ||
+    trim($_POST['veterinario']??'')==='' ||
+    trim($_POST['motivo']??'')==='' ||
+    empty($_POST['status']) ||
+    trim($_POST['observacoes']??'')===''
+){
+    $erro='Preencha todos os campos.';
+}
  else{
   $dados=[(int)$_POST['animal_id'],$dt,$_POST['veterinario'],$_POST['motivo'],$_POST['status'],$_POST['observacoes']];
   if($id){$s=$pdo->prepare("UPDATE consultas SET animal_id=?,data_consulta=?,veterinario=?,motivo=?,status=?,observacoes=? WHERE id=?");$s->execute([...$dados,$id]);}
