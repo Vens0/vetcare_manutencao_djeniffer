@@ -4,10 +4,22 @@ $id=(int)($_GET['id']??0);$r=['animal_id'=>'','data_consulta'=>'','veterinario'=
 if($id){$s=$pdo->prepare("SELECT * FROM consultas WHERE id=?");$s->execute([$id]);$r=$s->fetch()?:$r;}
 $animais=$pdo->query("SELECT id,nome FROM animais ORDER BY nome")->fetchAll();$erro='';
 if($_SERVER['REQUEST_METHOD']==='POST'){
- $data=$_POST['data_consulta']??'';$dt=str_replace('T',' ',$data).(strlen($data)===16?':00':'');
+ $data=$_POST['data_consulta']??'';
+ $dt=str_replace('T',' ',$data).(strlen($data)===16?':00':'');
+ // Décimo segundo chamado, a data de agendamento para consultas permite adicionar um ano ou muito alto ou muito baixo, sendo improvável de ocorrer. O seguinte trecho corrige o problema:
+ $dataConsulta = DateTime::createFromFormat('!Y-m-d\TH:i', $data);
+$hoje = new DateTime();
+if (
+    !$dataConsulta ||
+    $dataConsulta->format('Y-m-d\TH:i') !== $data ||
+    $dataConsulta < (clone $hoje)->modify('-10 years') ||
+    $dataConsulta > (clone $hoje)->modify('+2 years')
+) {
+    $erro = 'Informe uma data de consulta válida. O intervalo permitido é de 10 anos no passado até 2 anos no futuro.';
+}
 // Sétimo chamado, o cadastro de consulta não exige que todos os campos sejam preenchidos
 // if(trim($_POST['veterinario']??'')==='')$erro='Informe o veterinário.';
-if(
+elseif(
     empty($_POST['animal_id']) ||
     empty($_POST['data_consulta']) ||
     trim($_POST['veterinario']??'')==='' ||
