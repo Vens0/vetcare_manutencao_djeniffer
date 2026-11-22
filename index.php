@@ -4,7 +4,9 @@ require_once __DIR__.'/config/auth.php';
 exigirLogin();
 $titulo='Painel';
 $tutores=(int)$pdo->query("SELECT COUNT(*) FROM tutores WHERE ativo=1")->fetchColumn();
-$animais=(int)$pdo->query("SELECT COUNT(*) FROM animais")->fetchColumn(); 
+// Chamado 9, os animais ativos ainda são contabilizados no painel de animal cadastrados, indo contra a RN12
+// $animais=(int)$pdo->query("SELECT COUNT(*) FROM animais")->fetchColumn(); 
+$animais=(int)$pdo->query("SELECT COUNT(*) FROM animais WHERE ativo=1")->fetchColumn();
 $consultas=(int)$pdo->query("SELECT COUNT(*) FROM consultas WHERE status='Agendada'")->fetchColumn();
 $proximas=$pdo->query("SELECT c.*, a.nome AS animal FROM consultas c JOIN animais a ON a.id=c.animal_id ORDER BY c.data_consulta LIMIT 5")->fetchAll();
 include __DIR__.'/includes/header.php';
