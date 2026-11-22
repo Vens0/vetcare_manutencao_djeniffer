@@ -6,6 +6,11 @@ $erro='';
 if($_SERVER['REQUEST_METHOD']==='POST'){
  $nome=trim($_POST['nome']??''); $telefone=trim($_POST['telefone']??'');
  if($nome==='') $erro='Informe o nome.';
+ // Chamado 11 - No cadastro de tutores é permitido inserir letras e números ao invés de apenas números. O seguinte trecho corrige isso:
+ elseif($telefone!=='' && !preg_match('/^[0-9]+$/', $telefone)) {
+    $erro='O telefone deve conter apenas números.';
+}
+// Fim do trecho
  else {
   if($id){$s=$pdo->prepare("UPDATE tutores SET nome=?,telefone=?,email=?,endereco=?,ativo=? WHERE id=?");$s->execute([$nome,$telefone,$_POST['email'],$_POST['endereco'],(int)($_POST['ativo']??1),$id]);}
   else{$s=$pdo->prepare("INSERT INTO tutores(nome,telefone,email,endereco) VALUES(?,?,?,?)");$s->execute([$nome,$telefone,$_POST['email'],$_POST['endereco']]);}
