@@ -6,6 +6,18 @@ $tutores=$pdo->query("SELECT id,nome FROM tutores ORDER BY nome")->fetchAll();$e
 if($_SERVER['REQUEST_METHOD']==='POST'){
  $nome=trim($_POST['nome']??'');$especie=trim($_POST['especie']??'');
  if($nome==='')$erro='Informe o nome do animal.';
+ // Chamado 2 - erro na validação da data de nascimento do animal, permitindo colocar uma data maior do que o ano que estamos
+ // O seguinte trecho foi adicionado para validar a data de nascimento:
+ elseif (!empty($_POST['nascimento']) && (
+    !($data = DateTime::createFromFormat('!Y-m-d', $_POST['nascimento'])) ||
+    $data->format('Y-m-d') !== $_POST['nascimento'] ||
+    $data > new DateTime('today')
+)) {
+    $erro = 'Informe uma data de nascimento válida.';
+}
+
+// Fim do trecho
+
  else{
   $dados=[(int)$_POST['tutor_id'],$nome,$especie,$_POST['raca'],$_POST['nascimento']?:null,$_POST['sexo'],$_POST['observacoes']];
   if($id){$s=$pdo->prepare("UPDATE animais SET tutor_id=?,nome=?,especie=?,raca=?,nascimento=?,sexo=?,observacoes=?,ativo=? WHERE id=?");$s->execute([...$dados,(int)($_POST['ativo']??1),$id]);}
